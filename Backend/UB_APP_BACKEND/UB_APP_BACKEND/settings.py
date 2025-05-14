@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     
     # modulos principales
-    # 'AUTENTIFICACION',
+    'AUTENTIFICACION',
     'ARCHIVOS',
     # 'DASHBOARD',
 

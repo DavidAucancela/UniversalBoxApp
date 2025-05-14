@@ -1,10 +1,11 @@
+from rest_framework import routers 
+from ARCHIVOS import views
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import FacturaViewSet
 
-router = DefaultRouter()
-router.register(r'facturas', FacturaViewSet)
+router = routers.DefaultRouter()
+router.register(r'facturas', views.FacturaViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
 ]
+
