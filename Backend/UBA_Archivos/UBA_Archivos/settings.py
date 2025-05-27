@@ -1,39 +1,21 @@
-
-from pathlib import Path
-
-#librerias django-environ
 import environ
 import os
 
-
-#librerias para cargar variables de entorno
 from pathlib import Path
-from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
 
-# configuracion de django-environ
-env = environ.Env(
-    # definicion de variables de entorno
-    # DEBUG=(bool, False)
-)
-
-# configuracion de la ruta base del proyecto
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Ttoma la variable de entorno .env
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
 
-
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,30 +23,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # librerias
     'rest_framework',
-    
-    # modulos principales
-    'AUTENTIFICACION',
-    'ARCHIVOS',
-    # 'DASHBOARD',
 
-
-    # modulos de terceros
-    # 'notificaciones',
-    # 'registro/historico',
+    'Archivos',
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ]
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,7 +38,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'UB_APP_BACKEND.urls'
+ROOT_URLCONF = 'UBA_Archivos.urls'
 
 TEMPLATES = [
     {
@@ -93,7 +55,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'UB_APP_BACKEND.wsgi.application'
+WSGI_APPLICATION = 'UBA_Archivos.wsgi.application'
 
 
 # Database
@@ -101,16 +63,19 @@ WSGI_APPLICATION = 'UB_APP_BACKEND.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
-# user validation
-AUTH_USER_MODEL = 'AUTENTIFICACION.Usuario'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -125,10 +90,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-# Configurar media
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Internationalization

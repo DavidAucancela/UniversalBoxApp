@@ -5,3 +5,6 @@ class FacturaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Factura
         fields = '__all__'
+
+class FacturaExcelUploadSerializer(serializers.Serializer):
+    archivo = serializers.FileField()
