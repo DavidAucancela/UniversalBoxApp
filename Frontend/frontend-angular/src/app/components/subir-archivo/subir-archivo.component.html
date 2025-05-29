@@ -1,0 +1,33 @@
+<!-- file-upload.component.html -->
+<div class="container py-4">
+  <div class="card shadow">
+    <div class="card-body">
+      <h2 class="card-title mb-4">Gestión de Archivos</h2>
+
+      <div class="mb-4">
+        <h4>Subir Archivo</h4>
+        <div class="input-group mb-2">
+          <input type="file" class="form-control" (change)="onFileSelected($event)" />
+          <button class="btn btn-primary" (click)="uploadFile()" [disabled]="!selectedFile">Subir</button>
+        </div>
+        <div *ngIf="uploadProgress !== null" class="progress mb-2">
+          <div class="progress-bar" role="progressbar" [style.width]="uploadProgress + '%'" aria-valuenow="uploadProgress" aria-valuemin="0" aria-valuemax="100">{{ uploadProgress }}%</div>
+        </div>
+        <div *ngIf="uploadMessage" class="alert alert-info py-1 px-2">
+          {{ uploadMessage }}
+        </div>
+      </div>
+
+      <div>
+        <h4>Archivos Disponibles</h4>
+        <div *ngIf="filesList.length === 0" class="text-muted">No hay archivos disponibles</div>
+        <ul *ngIf="filesList.length > 0" class="list-group">
+          <li *ngFor="let file of filesList" class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ file.name }} <small class="text-secondary">({{ file.size | fileSize }})</small></span>
+            <button class="btn btn-outline-success btn-sm" (click)="downloadFile(file.name)">Descargar</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

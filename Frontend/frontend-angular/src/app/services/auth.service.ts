@@ -1,24 +1,77 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
-@Injectable({
-  providedIn: 'root'
-})
+interface LoginResponse {
+  access: string;
+  refresh: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  getRole(): string {
-    if (typeof window !== 'undefined' && localStorage.getItem('role')) {
-      return localStorage.getItem('role')!;
-    }
-    return '';
-  }
+  private apiUrl = 'http://localhost:8000/users/token/'; // Ajusta la URL si es necesario
+  private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
-  isLoggedIn(): boolean {
-    return typeof window !== 'undefined' && !!localStorage.getItem('token');
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.apiUrl, { username: email, password }).pipe(
+      tap((res: LoginResponse) => {
+        this.setItem('access_token', res.access);
+        this.setItem('refresh_token', res.refresh);
+        this.loggedIn.next(true);
+      })
+    );
   }
 
   logout(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.clear();
-      window.location.href = '/login';
+    this.removeItem('access_token');
+    this.removeItem('refresh_token');
+    this.loggedIn.next(false);
+  }
+
+  isLoggedIn(): Observable<boolean> {
+    return this.loggedIn.asObservable();
+  }
+
+  private hasToken(): boolean {
+    return !!this.getToken();
+  }
+
+  private get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
+  private setItem(key: string, value: string): void {
+    if (this.isBrowser) {
+      localStorage.setItem(key, value);
     }
+  }
+
+  private getItem(key: string): string | null {
+    return this.isBrowser ? localStorage.getItem(key) : null;
+  }
+
+  private removeItem(key: string): void {
+    if (this.isBrowser) {
+      localStorage.removeItem(key);
+    }
+  }
+
+  public getToken(): string | null {
+    return this.getItem('access_token');
+  }
+
+  guardarToken(token: string) {
+    this.setItem('access_token', token);
+    this.loggedIn.next(true);
+  }
+
+  obtenerToken() {
+    return this.getToken();
   }
 }

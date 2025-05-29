@@ -5,72 +5,64 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Factura, DetalleFactura
-from .serializers import FacturaSerializer, FacturaConDetallesSerializer, DetalleFacturaSerializer
+from .serializers import FacturaSerializer, FacturaConDetallesSerializer
 
+# Cargar un archivo Excel y procesar las facturas
 class CargarFacturaExcelAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
         archivo = request.FILES.get('archivo')
-
         if not archivo:
             return Response({"error": "Archivo no proporcionado"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Guardar archivo temporalmente
-        factura_obj = Factura.objects.create(
+        # Guardar el archivo en el modelo Factura
+        factura = Factura.objects.create(
             archivo=archivo,
             nombre=archivo.name,
-            rutaAlmacenamiento=f"facturas_excel/{archivo.name}",
-            tamaño=round(archivo.size / 1024, 2),  # Tamaño en KB
-            estadoProcesamiento="PEN"  # Por defecto
+            rutaAlmacenamiento=archivo.name,
+            tamaño=archivo.size,
+            estadoProcesamiento="PEN"  # Pendiente de procesamiento
         )
 
         try:
+            # Leer el archivo Excel
             df = pd.read_excel(archivo)
 
-            # Renombrar columnas del Excel para que coincidan con el modelo
-            df.rename(columns={
-                'NOMBRES Y APELLIDOS': 'consignatario',
-                'RUC - CEDULA': 'ruc_cedula',
-                'PESO KG': 'peso_kg',
-                'VALOR FOB': 'valor_fob',
-                'DESCRIPCION': 'descripcion',
-                'UNIDADES FISICAS': 'unidades_fisicas',
-                'FACTURA COMERCIAL': 'factura_comercial',
-                'FECHA DE EMISIÓN': 'fecha_emision',
-            }, inplace=True)
+            # Propagar los valores agrupadores hacia abajo si están en blanco  
+            columnas_a_propagar = [
+                'HAWB',
+                'CONSIGNATARIO',
+                'RUC - CEDULA',
+                'PESO KG',
+                'FACTURA COMERCIAL',
+                'FECHA DE EMISIÓN',
+            ]
+            df[columnas_a_propagar] = df[columnas_a_propagar].fillna(method='ffill')
 
-            detalles = []
             for _, row in df.iterrows():
                 detalle = DetalleFactura(
-                    factura=factura_obj,
-                    consignatario=row.get('consignatario', ''),
-                    ruc_cedula=row.get('ruc_cedula', ''),
-                    peso_kg=row.get('peso_kg', 0),
-                    valor_fob=row.get('valor_fob', 0),
-                    descripcion=row.get('descripcion', ''),
-                    unidades_fisicas=row.get('unidades_fisicas', ''),
-                    factura_comercial=row.get('factura_comercial', ''),
-                    fecha_emision=row.get('fecha_emision')
+                    factura=factura,
+                    consignatario=row.get('CONSIGNATARIO', ''),
+                    ruc_cedula=row.get('RUC - CEDULA', ''),
+                    peso_kg=row.get('PESO KG', 0),
+                    valor_fob=row.get('VALOR FOB', 0),
+                    descripcion=row.get('DESCRIPCIÓN', ''),
+                    unidades_fisicas=row.get('UNIDADES FISICAS', ''),
+                    factura_comercial=row.get('FACTURA COMERCIAL', ''),
+                    fecha_emision=pd.to_datetime(row.get('FECHA DE EMISIÓN', ''), errors='coerce')
                 )
                 detalle.save()
-                detalles.append(DetalleFacturaSerializer(detalle).data)
 
-            # Cambiar estado a procesado
-            factura_obj.estadoProcesamiento = "PAG"
-            factura_obj.save()
+            factura.estadoProcesamiento = "PAG"
+            factura.save()
 
-            return Response({
-                "mensaje": "Archivo procesado correctamente",
-                "factura": FacturaSerializer(factura_obj).data,
-                "detalles_cargados": detalles
-            }, status=status.HTTP_201_CREATED)
+            return Response({"mensaje": "Archivo procesado correctamente"}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            factura_obj.estadoProcesamiento = "PEN"
-            factura_obj.save()
-            return Response({"error": f"Error al procesar el archivo: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+            factura.estadoProcesamiento = "PEN"
+            factura.save()
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Detalle de una factura por ID
 class FacturaDetailAPIView(generics.RetrieveAPIView):
@@ -88,6 +80,6 @@ class FacturaDeleteAPIView(APIView):
         try:
             factura = Factura.objects.get(pk=pk)
             factura.delete()
-            return Response({"mensaje": "Factura eliminada correctamente"}, status=204)
+            return Response({"mensaje": "Factura eliminada correctamente"}, status=status.HTTP_204_NO_CONTENT)
         except Factura.DoesNotExist:
-            return Response({"error": "Factura no encontrada"}, status=404)
+            return Response({"error": "Factura no encontrada"}, status=status.HTTP_404_NOT_FOUND)

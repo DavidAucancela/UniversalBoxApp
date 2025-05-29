@@ -1,19 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule], // Opción recomendada
+
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  userRole: string = '';
-
-  constructor(private authService: AuthService) {
-    this.userRole = this.authService.getRole();
-  }
+  menuItems = [
+    { name: 'Opción 1', icon: 'settings' },
+    { name: 'Opción 2', icon: 'person' },
+    { name: 'Opción 3', icon: 'dashboard' }
+  ];
 }
-

@@ -3,27 +3,17 @@
 
     <a class="navbar-brand" href="#" style="position: relative;">Universal Box</a>
 
-    <ng-container *ngIf="isAuthenticated">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li *ngIf="userRole === 'admin'" class="nav-item">
-            <a class="nav-link" routerLink="/config">Configuración</a>
-          </li>
-          <li *ngIf="userRole === 'gerente'" class="nav-item">
-            <a class="nav-link" routerLink="/busqueda">Búsqueda</a>
-          </li>
-          <li *ngIf="userRole === 'digitador'" class="nav-item">
-            <a class="nav-link" routerLink="/subida">Subir Excel</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" (click)="logout()">Cerrar sesión</a>
-          </li>
-        </ul>
-      </div>
-    </ng-container>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+          <a class="nav-link" routerLink="/config">Configuración</a>
+          <a class="nav-link" routerLink="/busqueda">Búsqueda</a>
+          <a class="nav-link" routerLink="/subida">Subir Excel</a>
+          <!-- <a class="nav-link" (click)="logout()">Cerrar sesión</a> -->
+      </ul>
+    </div>
   </div>
 </nav>

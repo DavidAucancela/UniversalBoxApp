@@ -1,17 +1,21 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './layouts/navbar/navbar.component';
 import { FooterComponent } from './layouts/footer/footer.component';
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { LoginComponent } from './pages/login/login.component';
 
+
+
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
+    RouterModule,
     NavbarComponent,
     FooterComponent,
     SidebarComponent,
-    LoginComponent
+    LoginComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

@@ -3,19 +3,20 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 # BaseManager: metodo para crear usuarios y superusuarios.
 class UsuarioManager(BaseUserManager):
-    def create_user(self, correo, hashContraseña=None, **extra_fields):
+    def create_user(self, correo, nombre, apellido, password=None, **extra_fields):
         if not correo:
             raise ValueError('El correo es obligatorio')
         correo = self.normalize_email(correo)
-        user = self.model(correo=correo, **extra_fields)
-        user.set_password(hashContraseña)
+        # user = self.model(correo=correo)
+        user = self.model(correo=correo, nombre=nombre, apellido=apellido, **extra_fields)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, correo, hashContraseña, **extra_fields):
+    def create_superuser(self, correo, nombre, apellido, password=None, **extra_fields):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
-        return self.create_user(correo, hashContraseña, **extra_fields)
+        return self.create_user(correo, nombre, apellido, password, **extra_fields)
 
 # MODELO ROL
 class Rol(models.Model):
@@ -34,8 +35,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     fechaRegistro = models.DateTimeField(auto_now_add=True)
     ultimoAcceso = models.TimeField(null=True, blank=True)
 
-    roles = models.ManyToManyField(Rol, related_name='usuarios')
-
+    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True, blank=True)
+    
     # Campos requeridos por Django
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

@@ -1,11 +1,5 @@
 <ul class="nav flex-column p-3">
-  <li *ngIf="userRole === 'admin'" class="nav-item">
     <a class="nav-link" routerLink="/usuarios">Gestión de Usuarios</a>
-  </li>
-  <li *ngIf="userRole === 'gerente'" class="nav-item">
     <a class="nav-link" routerLink="/reportes">Reportes</a>
-  </li>
-  <li *ngIf="userRole === 'digitador'" class="nav-item">
     <a class="nav-link" routerLink="/subida">Subir Archivos</a>
-  </li>
 </ul>

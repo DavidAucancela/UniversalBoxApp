@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     
     # librerias
     'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
     
     # modulos principales
     'AUTENTIFICACION',
@@ -57,13 +59,19 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ]
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+from datetime import timedelta
+
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,  # Genera nuevo refresh token al actualizar
 }
 
 MIDDLEWARE = [
@@ -74,7 +82,26 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'AUTENTIFICACION.middleware.RolMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
+
+    'django.middleware.common.CommonMiddleware',
+
+
 ]
+
+# Permitir conexión desde el frontend
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:4200",  # o la URL donde se ejecuta Angular
+# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # o la URL donde se ejecuta Angular
+]
+
+
+
 
 ROOT_URLCONF = 'UB_APP_BACKEND.urls'
 
@@ -101,8 +128,12 @@ WSGI_APPLICATION = 'UB_APP_BACKEND.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
