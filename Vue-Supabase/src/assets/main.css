@@ -1,0 +1,180 @@
+@import './base.css';
+
+/* ===== Reset y Estilos Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --primary-color: #4361ee;
+  --primary-light: #4895ef;
+  --secondary-color: #3f37c9;
+  --dark-color: #2b2d42;
+  --gray-color: #8d99ae;
+  --light-color: #edf2f4;
+  --success-color: #4cc9f0;
+  --warning-color: #f72585;
+  --border-radius: 12px;
+  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+/* Layout general que cubre toda la pantalla sin desplazamiento lateral */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Contenedor principal */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Navbar fijo arriba */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.navbar nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Footer fijo abajo */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background-color: #114a87dd;
+  text-align: center;
+  line-height: 50px;
+  font-size: 0.9rem;
+  z-index: 1000;
+}
+
+/* Contenido ajustado entre navbar y footer */
+.main-content {
+  margin-top: 60px;   /* espacio para navbar */
+  margin-bottom: 30px; /* espacio para footer */
+  flex: 1;
+  padding: 0 0 0 0 rem;
+  overflow-y: auto;
+  background-color: white;
+}
+
+/* Estilos para el login */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 150px); /* Descuenta nav y footer */
+  padding: 1rem;
+  background: var(--light-color);
+}
+
+.login-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 0.2rem;
+  color: var(--dark-color);
+}
+
+.subtitle {
+  color: var(--gray-color);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  color: var(--dark-color);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--gray-color);
+  transition: var(--transition);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(67, 97, 238, 0.4);
+}
+
+.options {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+.reset-link {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.reset-link:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.login-button:hover {
+  background-color: var(--primary-light);
+}
+
+h1, h2, h3 {
+  color: var(--dark-color);
+}
